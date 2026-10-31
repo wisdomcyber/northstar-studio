@@ -1,8 +1,6 @@
-FROM python:3.13-slim
+FROM python:3.13-alpine
 
-RUN apt-get update \
-    && apt-get upgrade -y \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk upgrade --no-cache
 
 WORKDIR /app
 COPY server.py ./
