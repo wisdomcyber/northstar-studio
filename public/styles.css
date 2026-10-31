@@ -1,0 +1,71 @@
+:root {
+  color-scheme: dark;
+  --ink: #f5f7ff;
+  --muted: #aeb7cf;
+  --surface: #111831;
+  --accent: #ffcf5a;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: #0b1020;
+  color: var(--ink);
+  font: 16px/1.6 Arial, sans-serif;
+}
+nav {
+  height: 76px;
+  padding: 0 clamp(24px, 7vw, 96px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #252c44;
+}
+.brand { color: var(--ink); font-size: 22px; font-weight: 800; text-decoration: none; }
+.brand span { color: var(--accent); }
+.nav-link { color: var(--ink); text-decoration: none; }
+main { overflow: hidden; }
+.hero, .contact { padding: 96px clamp(24px, 7vw, 96px); }
+.hero {
+  min-height: 620px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: radial-gradient(circle at 75% 35%, #1f315d 0, transparent 35%);
+}
+.eyebrow { color: var(--accent); letter-spacing: .14em; text-transform: uppercase; font-size: 13px; font-weight: 700; }
+h1 { max-width: 980px; margin: 12px 0 24px; font-size: clamp(48px, 8vw, 104px); line-height: .94; letter-spacing: -.055em; }
+h2 { font-size: clamp(32px, 5vw, 64px); line-height: 1; letter-spacing: -.035em; }
+.intro { max-width: 620px; color: var(--muted); font-size: clamp(18px, 2vw, 24px); }
+.button {
+  align-self: flex-start;
+  border: 0;
+  border-radius: 999px;
+  padding: 14px 22px;
+  background: var(--accent);
+  color: #111;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+.services {
+  padding: 64px clamp(24px, 7vw, 96px);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  background: var(--surface);
+}
+.services article { border-top: 1px solid #596176; padding-top: 20px; }
+.services span { color: var(--accent); }
+.services h2 { font-size: 28px; }
+.services p { color: var(--muted); }
+.contact { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 8vw, 100px); }
+form { display: grid; gap: 18px; }
+label { display: grid; gap: 8px; color: var(--muted); font-size: 14px; }
+input, textarea { width: 100%; border: 1px solid #343c59; border-radius: 8px; padding: 12px; background: #111831; color: var(--ink); font: inherit; }
+textarea { resize: vertical; }
+@media (max-width: 760px) {
+  .services, .contact { grid-template-columns: 1fr; }
+  .hero, .contact { min-height: auto; padding-top: 72px; padding-bottom: 72px; }
+}
