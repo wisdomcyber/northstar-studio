@@ -18,6 +18,10 @@ SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD", "")
 CONTACT_TO = os.environ.get("CONTACT_TO", SMTP_USER)
 
 
+def normalize_path(path):
+    return unquote(path.split("?", 1)[0]).lstrip("/")
+
+
 def json_response(handler, status, payload):
     body = json.dumps(payload).encode("utf-8")
     handler.send_response(status)
@@ -53,14 +57,22 @@ class Handler(BaseHTTPRequestHandler):
     server_version = "HostableSite/1.0"
 
     def do_GET(self):
-        if self.path == "/health":
+        if normalize_path(self.path) == "health":
             json_response(self, 200, {"status": "ok"})
             return
 
-        requested = unquote(self.path.split("?", 1)[0]).lstrip("/")
+        requested = normalize_path(self.path)
         if requested == "":
             requested = "index.html"
+
         file_path = (PUBLIC_DIR / requested).resolve()
+        if file_path.is_dir():
+            index_path = file_path / "index.html"
+            if index_path.is_file():
+                file_path = index_path
+            else:
+                json_response(self, 404, {"error": "Not found"})
+                return
 
         if PUBLIC_DIR.resolve() not in file_path.parents and file_path != PUBLIC_DIR.resolve():
             json_response(self, 403, {"error": "Forbidden"})
@@ -79,7 +91,7 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(content)
 
     def do_POST(self):
-        if self.path != "/api/contact":
+        if normalize_path(self.path) != "api/contact":
             json_response(self, 404, {"error": "Not found"})
             return
 
