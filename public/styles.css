@@ -26,7 +26,7 @@ nav {
 .brand span { color: var(--accent); }
 .nav-link { color: var(--ink); text-decoration: none; }
 main { overflow: hidden; }
-.hero, .contact { padding: 96px clamp(24px, 7vw, 96px); }
+.hero { padding: 96px clamp(24px, 7vw, 96px); }
 .hero {
   min-height: 620px;
   display: flex;
@@ -60,12 +60,7 @@ h2 { font-size: clamp(32px, 5vw, 64px); line-height: 1; letter-spacing: -.035em;
 .services span { color: var(--accent); }
 .services h2 { font-size: 28px; }
 .services p { color: var(--muted); }
-.contact { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 8vw, 100px); }
-form { display: grid; gap: 18px; }
-label { display: grid; gap: 8px; color: var(--muted); font-size: 14px; }
-input, textarea { width: 100%; border: 1px solid #343c59; border-radius: 8px; padding: 12px; background: #111831; color: var(--ink); font: inherit; }
-textarea { resize: vertical; }
 @media (max-width: 760px) {
-  .services, .contact { grid-template-columns: 1fr; }
-  .hero, .contact { min-height: auto; padding-top: 72px; padding-bottom: 72px; }
+  .services { grid-template-columns: 1fr; }
+  .hero { min-height: auto; padding-top: 72px; padding-bottom: 72px; }
 }

@@ -1,9 +1,6 @@
 import json
 import mimetypes
 import os
-import smtplib
-import ssl
-from email.message import EmailMessage
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import unquote
@@ -11,11 +8,6 @@ from urllib.parse import unquote
 
 PORT = int(os.environ.get("PORT", "8080"))
 PUBLIC_DIR = Path(__file__).resolve().parent / "public"
-SMTP_HOST = os.environ.get("SMTP_HOST", "smtp.gmail.com")
-SMTP_PORT = int(os.environ.get("SMTP_PORT", "465"))
-SMTP_USER = os.environ.get("SMTP_USER", "")
-SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD", "")
-CONTACT_TO = os.environ.get("CONTACT_TO", SMTP_USER)
 
 
 def normalize_path(path):
@@ -30,27 +22,6 @@ def json_response(handler, status, payload):
     handler.send_header("Cache-Control", "no-store")
     handler.end_headers()
     handler.wfile.write(body)
-
-
-def send_contact_email(name, email, message):
-    if not SMTP_USER or not SMTP_PASSWORD or not CONTACT_TO:
-        raise RuntimeError("SMTP is not configured")
-
-    mail = EmailMessage()
-    mail["From"] = SMTP_USER
-    mail["To"] = CONTACT_TO
-    mail["Reply-To"] = email
-    mail["Subject"] = f"Website contact from {name}"
-    mail.set_content(
-        f"Name: {name}\n"
-        f"Email: {email}\n\n"
-        f"{message}"
-    )
-
-    context = ssl.create_default_context()
-    with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT, context=context, timeout=15) as smtp:
-        smtp.login(SMTP_USER, SMTP_PASSWORD)
-        smtp.send_message(mail)
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -89,33 +60,6 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Cache-Control", "public, max-age=300")
         self.end_headers()
         self.wfile.write(content)
-
-    def do_POST(self):
-        if normalize_path(self.path) != "api/contact":
-            json_response(self, 404, {"error": "Not found"})
-            return
-
-        try:
-            length = int(self.headers.get("Content-Length", "0"))
-            data = json.loads(self.rfile.read(length).decode("utf-8"))
-            name = str(data.get("name", "")).strip()
-            email = str(data.get("email", "")).strip()
-            message = str(data.get("message", "")).strip()
-
-            if not name or not email or not message:
-                json_response(self, 400, {"error": "Name, email, and message are required."})
-                return
-            if "@" not in email or "\n" in name or "\n" in email:
-                json_response(self, 400, {"error": "Enter a valid email address."})
-                return
-
-            send_contact_email(name, email, message)
-            json_response(self, 200, {"ok": True})
-        except (json.JSONDecodeError, UnicodeDecodeError):
-            json_response(self, 400, {"error": "Invalid JSON request."})
-        except Exception as error:
-            print(f"Contact delivery failed: {error}")
-            json_response(self, 503, {"error": "Email service is temporarily unavailable."})
 
     def log_message(self, format, *args):
         print("%s - %s" % (self.address_string(), format % args))
